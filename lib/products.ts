@@ -24,3 +24,12 @@ export async function getProductsByIds(ids: string[]): Promise<Product[]> {
   const { data } = await supabase.from("products").select(COLUMNS).in("id", ids);
   return data ?? [];
 }
+
+export async function listProducts(order: "newest" | "oldest" = "newest"): Promise<Product[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("products")
+    .select(COLUMNS)
+    .order("created_at", { ascending: order === "oldest" });
+  return data ?? [];
+}

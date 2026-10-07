@@ -6,7 +6,7 @@ import { getProductsByIds } from "@/lib/products";
 import { MAX_QUANTITY, clampQuantity } from "@/lib/shop";
 
 export type CartResult =
-  | { ok: true; quantity: number; capped: boolean }
+  | { ok: true; quantity: number; added: number; capped: boolean }
   | { ok: false; message: string };
 
 export async function addToCart(productId: string, quantity: number): Promise<CartResult> {
@@ -15,7 +15,8 @@ export async function addToCart(productId: string, quantity: number): Promise<Ca
 
   const lines = await readCart();
   const existing = lines.find((line) => line.productId === product.id);
-  const requested = (existing?.quantity ?? 0) + clampQuantity(Number(quantity));
+  const previous = existing?.quantity ?? 0;
+  const requested = previous + clampQuantity(Number(quantity));
   const next = Math.min(MAX_QUANTITY, requested);
 
   const updated = existing
@@ -24,7 +25,7 @@ export async function addToCart(productId: string, quantity: number): Promise<Ca
   await writeCart(updated);
   revalidatePath("/cart");
 
-  return { ok: true, quantity: next, capped: requested > MAX_QUANTITY };
+  return { ok: true, quantity: next, added: next - previous, capped: requested > MAX_QUANTITY };
 }
 
 export async function updateCartItem(productId: string, quantity: number): Promise<void> {

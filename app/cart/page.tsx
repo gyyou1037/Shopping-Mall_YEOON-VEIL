@@ -3,6 +3,8 @@ import Link from "next/link";
 import { CartItem } from "@/components/cart-item";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { TrackEcommerce } from "@/components/track-ecommerce";
+import { ecommerceItem } from "@/lib/analytics";
 import { readCart } from "@/lib/cart";
 import { getProductsByIds } from "@/lib/products";
 import { formatPrice } from "@/lib/shop";
@@ -32,6 +34,11 @@ export default async function CartPage() {
           </div>
         ) : (
           <>
+            <TrackEcommerce
+              event="view_cart"
+              value={total}
+              items={items.map(({ product, quantity }) => ecommerceItem(product, quantity))}
+            />
             <ul className="cart-list">
               {items.map(({ product, quantity }) => (
                 <CartItem

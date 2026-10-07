@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { CheckoutForm } from "@/components/checkout-form";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { TrackEcommerce } from "@/components/track-ecommerce";
+import { ecommerceItem } from "@/lib/analytics";
 import { readCart } from "@/lib/cart";
 import { getProductBySlug, getProductsByIds, type Product } from "@/lib/products";
 import { clampQuantity, formatPrice } from "@/lib/shop";
@@ -35,12 +37,14 @@ export default async function CheckoutPage({ searchParams }: Props) {
 
   if (items.length === 0) redirect("/cart");
 
-  const total = items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+  const ecommerceItems = items.map(({ product, quantity }) => ecommerceItem(product, quantity));
+  const total = ecommerceItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
     <>
       <SiteHeader />
       <main id="main" className="shop-page wrap narrow">
+        <TrackEcommerce event="begin_checkout" items={ecommerceItems} value={total} />
         <h1 className="page-title">주문서</h1>
         <section aria-labelledby="order-items">
           <h2 id="order-items" className="section-title">
@@ -72,6 +76,7 @@ export default async function CheckoutPage({ searchParams }: Props) {
             productId={direct?.productId}
             quantity={direct?.quantity}
             amount={total}
+            items={ecommerceItems}
           />
         </section>
       </main>

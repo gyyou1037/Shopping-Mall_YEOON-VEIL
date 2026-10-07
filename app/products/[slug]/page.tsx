@@ -5,6 +5,8 @@ import { Photo } from "@/components/photo";
 import { ProductPurchase } from "@/components/product-purchase";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { TrackEcommerce } from "@/components/track-ecommerce";
+import { ecommerceItem } from "@/lib/analytics";
 import { getProductBySlug } from "@/lib/products";
 import { formatPrice } from "@/lib/shop";
 
@@ -20,6 +22,8 @@ export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
   const product = await getProductBySlug(slug);
   if (!product) notFound();
+
+  const item = ecommerceItem(product, 1);
 
   return (
     <>
@@ -54,7 +58,14 @@ export default async function ProductPage({ params }: Props) {
             <p className="muted">
               화장대 위에 놓인 작은 여유. 하루의 시작과 끝에, 피부를 살피고 나에게 집중하는 시간을 더해보세요.
             </p>
-            <ProductPurchase productId={product.id} slug={product.slug} price={product.price} />
+            <TrackEcommerce event="view_item" items={[item]} value={item.price} />
+            <ProductPurchase
+              productId={product.id}
+              slug={product.slug}
+              name={product.name}
+              volume={product.volume}
+              price={product.price}
+            />
             <p className="fine">
               가격과 용량은 임시 정보이며, 전성분과 상세 정보는 준비 중입니다. 현재는 결제 없이 주문만 접수됩니다.
             </p>

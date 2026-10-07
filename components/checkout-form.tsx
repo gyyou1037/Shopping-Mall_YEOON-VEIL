@@ -5,17 +5,19 @@ import { useState } from "react";
 import { placeOrder } from "@/app/actions/order";
 import { AddressSearch } from "@/components/address-search";
 import { TossPaymentWidget } from "@/components/toss-payment-widget";
+import { savePendingPurchase, type EcommerceItem } from "@/lib/analytics";
 
 type Props = {
   mode: "cart" | "direct";
   productId?: string;
   quantity?: number;
   amount: number;
+  items: EcommerceItem[];
 };
 
 const NOTE_PRESETS = ["문 앞에 놓아 주세요.", "경비실에 맡겨 주세요.", "배송 전 연락 부탁드립니다."];
 
-export function CheckoutForm({ mode, productId, quantity, amount }: Props) {
+export function CheckoutForm({ mode, productId, quantity, amount, items }: Props) {
   const [widgets, setWidgets] = useState<TossPaymentsWidgets | null>(null);
   const [zipcode, setZipcode] = useState("");
   const [address, setAddress] = useState("");
@@ -39,6 +41,11 @@ export function CheckoutForm({ mode, productId, quantity, amount }: Props) {
         setError(result.message);
         return;
       }
+      savePendingPurchase({
+        transaction_id: result.orderId,
+        value: result.amount,
+        items,
+      });
       // 2) Open the payment window. On success TossPayments redirects to successUrl,
       //    where the server confirms the payment.
       await widgets.requestPayment({

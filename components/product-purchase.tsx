@@ -5,11 +5,18 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { addToCart } from "@/app/actions/cart";
 import { QuantitySelector } from "@/components/quantity-selector";
+import { pushEcommerce } from "@/lib/analytics";
 import { MAX_QUANTITY, formatPrice } from "@/lib/shop";
 
-type Props = { productId: string; slug: string; price: number };
+type Props = {
+  productId: string;
+  slug: string;
+  name: string;
+  volume: string | null;
+  price: number;
+};
 
-export function ProductPurchase({ productId, slug, price }: Props) {
+export function ProductPurchase({ productId, slug, name, volume, price }: Props) {
   const router = useRouter();
   const [quantity, setQuantity] = useState(1);
   const [pending, startTransition] = useTransition();
@@ -22,6 +29,21 @@ export function ProductPurchase({ productId, slug, price }: Props) {
       if (!result.ok) {
         setNotice({ text: result.message, error: true, added: false });
         return;
+      }
+      if (result.added > 0) {
+        pushEcommerce("add_to_cart", {
+          currency: "KRW",
+          value: price * result.added,
+          items: [
+            {
+              item_id: slug,
+              item_name: name,
+              ...(volume ? { item_variant: volume } : {}),
+              price,
+              quantity: result.added,
+            },
+          ],
+        });
       }
       setNotice({
         text: result.capped

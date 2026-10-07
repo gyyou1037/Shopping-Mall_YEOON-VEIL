@@ -5,7 +5,7 @@ import { useEffect, useId, useState } from "react";
 
 const links = [
   { href: "/#story", label: "브랜드 이야기" },
-  { href: "/#serum", label: "VEIL 세럼" },
+  { href: "/products", label: "상품" },
   { href: "/#ritual", label: "데일리 리추얼" },
   { href: "/#journal", label: "저널" },
 ];
@@ -48,7 +48,7 @@ export function SiteHeader() {
           장바구니
         </Link>
       </nav>
-      <Link className="header-shop" href="/products/veil-serum">
+      <Link className="header-shop" href="/products">
         제품 만나보기
       </Link>
       <Link className="header-cart" href="/cart">
