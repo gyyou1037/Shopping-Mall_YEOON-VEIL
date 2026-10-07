@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { GallerySection } from "@/components/gallery-section";
 import { Photo } from "@/components/photo";
 import { PurchaseDialog } from "@/components/purchase-dialog";
@@ -158,7 +159,12 @@ export default function Home() {
               <span>섬세한 감각</span>
               <span>일상의 여유</span>
             </div>
-            <PurchaseDialog />
+            <div className="product-actions">
+              <Link className="button dark" href="/products/veil-serum">
+                자세히 보기 · 구매하기
+              </Link>
+              <PurchaseDialog />
+            </div>
             <p className="fine">제품 상세 정보와 판매 일정은 준비 중입니다.</p>
           </div>
         </section>

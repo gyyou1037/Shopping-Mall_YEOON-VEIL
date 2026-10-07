@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://api.chamsae.art";
+import { submitInquiry } from "@/app/actions/inquiries";
 
 type FormStatus = "idle" | "sending" | "sent" | "error";
 
@@ -51,27 +50,10 @@ export function PurchaseDialog() {
     setMessage("");
 
     try {
-      const response = await fetch(`${API_URL}/api/inquiries`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: String(data.get("name") ?? ""),
-          email: String(data.get("email") ?? ""),
-          content: String(data.get("content") ?? ""),
-        }),
-      });
-      const body = (await response.json().catch(() => ({}))) as {
-        detail?: string;
-        errors?: string[];
-      };
-      if (!response.ok) {
-        const errors = Array.isArray(body.errors) ? body.errors.filter(Boolean).join(" ") : body.detail;
+      const result = await submitInquiry(data);
+      if (!result.ok) {
         setStatus("error");
-        setMessage(
-          response.status === 503
-            ? "지금은 문의를 접수하지 못하고 있습니다. 잠시 후 다시 시도해 주세요."
-            : errors || "문의를 보내지 못했습니다.",
-        );
+        setMessage(result.message);
         return;
       }
       form.reset();

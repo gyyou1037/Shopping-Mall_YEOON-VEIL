@@ -1,12 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useId, useState } from "react";
 
 const links = [
-  { href: "#story", label: "브랜드 이야기" },
-  { href: "#serum", label: "VEIL 세럼" },
-  { href: "#ritual", label: "데일리 리추얼" },
-  { href: "#journal", label: "저널" },
+  { href: "/#story", label: "브랜드 이야기" },
+  { href: "/#serum", label: "VEIL 세럼" },
+  { href: "/#ritual", label: "데일리 리추얼" },
+  { href: "/#journal", label: "저널" },
 ];
 
 export function SiteHeader() {
@@ -34,19 +35,25 @@ export function SiteHeader() {
 
   return (
     <header className="header">
-      <a className="logo" href="#main" aria-label="VEIL 홈">
+      <Link className="logo" href="/" aria-label="VEIL 홈">
         VEIL
-      </a>
+      </Link>
       <nav id={menuId} className={open ? "is-open" : undefined} aria-label="메인 메뉴">
         {links.map((link) => (
-          <a key={link.href} href={link.href} onClick={() => setOpen(false)}>
+          <Link key={link.href} href={link.href} onClick={() => setOpen(false)}>
             {link.label}
-          </a>
+          </Link>
         ))}
+        <Link className="nav-cart" href="/cart" onClick={() => setOpen(false)}>
+          장바구니
+        </Link>
       </nav>
-      <a className="header-shop" href="#serum">
+      <Link className="header-shop" href="/products/veil-serum">
         제품 만나보기
-      </a>
+      </Link>
+      <Link className="header-cart" href="/cart">
+        장바구니
+      </Link>
       <button
         className="menu-toggle"
         type="button"
